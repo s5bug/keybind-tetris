@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+  },
+  "include": ["eslint.config.ts", "vite.config.ts"]
+}
