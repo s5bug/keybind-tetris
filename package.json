@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@pixi/layout": "^3.2.0",
+    "@rimbu/hashed": "^2.1.3",
     "modern-normalize": "^3.0.1",
     "pixi.js": "^8.14.0",
     "zod": "^4.1.12"

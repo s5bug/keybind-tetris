@@ -14,6 +14,9 @@ importers:
       '@pixi/layout':
         specifier: ^3.2.0
         version: 3.2.0(@types/react@19.2.0)(pixi.js@8.14.0)(react@19.2.0)(yoga-layout@3.2.1)
+      '@rimbu/hashed':
+        specifier: ^2.1.3
+        version: 2.1.3
       modern-normalize:
         specifier: ^3.0.1
         version: 3.0.1
@@ -158,6 +161,24 @@ packages:
     peerDependencies:
       pixi.js: ^8.2.6
       react: '>=19.0.0'
+
+  '@rimbu/base@2.0.2':
+    resolution: {integrity: sha512-8oyRSq9y1dfc6IRfv5Rp0LayPyXzH7xTqneK966aOJ7ITtfKxbww6EwUgRr92iPyWDTgLw5NE1RkEhQRMCBvjg==}
+
+  '@rimbu/collection-types@2.1.3':
+    resolution: {integrity: sha512-f6vofMhl2hYf0DXrJxsPS9pR2E2KGGlErQWTo1YJSKf/wspV08aMMEirsTEzE3U6kspPL8b+Z4wLNBBeBayN9A==}
+
+  '@rimbu/common@2.0.2':
+    resolution: {integrity: sha512-+T3oHM72ztbg+aNzhwQlHY+AAzGdWkWIWtC1djycWkBtoJ49dinGoQuZkRw0j4ZOBKIzNx/gxzobDwmkJy3oNQ==}
+
+  '@rimbu/hashed@2.1.3':
+    resolution: {integrity: sha512-GSbRqL08FhlypE6msocfi220lTbhA+Rklfmi7BZW+Sx7RUMVm36g12rCvqls+DTYPws9dj7oZhDvxWjwwQfx0g==}
+
+  '@rimbu/list@2.1.3':
+    resolution: {integrity: sha512-jJy/DsdP39Sqn9ym7Lewk1LPxijFImCAt0sMHoFFXB95pFtUyM+b42LVbzgZ9Hm7pEyCESBf8F/R9kq7gYOhbw==}
+
+  '@rimbu/stream@2.2.1':
+    resolution: {integrity: sha512-TsfGtgCcLSj8BsvhNwnz2DTpZEeEEku5urrwpLB08ZXh4xywj7GwRs8l8WfT7BC37AhugN3/g/UbdOfsa7iuwQ==}
 
   '@rolldown/binding-android-arm64@1.0.0-beta.42':
     resolution: {integrity: sha512-W5ZKF3TP3bOWuBfotAGp+UGjxOkGV7jRmIRbBA7NFjggx7Oi6vOmGDqpHEIX7kDCiry1cnIsWQaxNvWbMdkvzQ==}
@@ -1053,6 +1074,44 @@ snapshots:
       - '@types/react'
     optional: true
 
+  '@rimbu/base@2.0.2':
+    dependencies:
+      '@rimbu/common': 2.0.2
+
+  '@rimbu/collection-types@2.1.3':
+    dependencies:
+      '@rimbu/base': 2.0.2
+      '@rimbu/common': 2.0.2
+      '@rimbu/stream': 2.2.1
+      tslib: 2.8.1
+
+  '@rimbu/common@2.0.2':
+    dependencies:
+      tslib: 2.8.1
+
+  '@rimbu/hashed@2.1.3':
+    dependencies:
+      '@rimbu/base': 2.0.2
+      '@rimbu/collection-types': 2.1.3
+      '@rimbu/common': 2.0.2
+      '@rimbu/list': 2.1.3
+      '@rimbu/stream': 2.2.1
+      tslib: 2.8.1
+
+  '@rimbu/list@2.1.3':
+    dependencies:
+      '@rimbu/base': 2.0.2
+      '@rimbu/collection-types': 2.1.3
+      '@rimbu/common': 2.0.2
+      '@rimbu/stream': 2.2.1
+      tslib: 2.8.1
+
+  '@rimbu/stream@2.2.1':
+    dependencies:
+      '@rimbu/base': 2.0.2
+      '@rimbu/common': 2.0.2
+      tslib: 2.8.1
+
   '@rolldown/binding-android-arm64@1.0.0-beta.42':
     optional: true
 
@@ -1716,8 +1775,7 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
-  tslib@2.8.1:
-    optional: true
+  tslib@2.8.1: {}
 
   type-check@0.4.0:
     dependencies:
