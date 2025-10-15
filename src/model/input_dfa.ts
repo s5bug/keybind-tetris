@@ -90,15 +90,35 @@ export interface Zfa<T> {
 export const unit: Unit = Object.freeze({ type: 'unit' })
 export const nothing: Nothing = Object.freeze({ type: 'nothing' })
 
-export const seq: (...parts: Dfa[]) => And = (...parts: Dfa[]) => Object.freeze({
-  type: 'and',
-  sequence: parts,
-})
+export const seq: (...parts: Dfa[]) => Dfa = (...parts: Dfa[]) => {
+  // units do nothing in seqs
+  const useful = parts.filter(dfa => dfa.type !== 'unit')
 
-export const or: (...parts: Dfa[]) => Or = (...parts: Dfa[]) => Object.freeze({
-  type: 'or',
-  alternatives: parts,
-})
+  // a seq of 0 things is a unit
+  if (useful.length === 0) return unit
+  // a seq of 1 thing is itself
+  if (useful.length === 1) return useful[0]
+
+  return Object.freeze({
+    type: 'and',
+    sequence: useful,
+  })
+}
+
+export const or: (...parts: Dfa[]) => Dfa = (...parts: Dfa[]) => {
+  // nothings do nothing in choices
+  const useful = parts.filter(dfa => dfa.type !== 'nothing')
+
+  // a choice of 0 things is nothing
+  if (useful.length === 0) return nothing
+  // a choice of 1 thing is itself
+  if (useful.length === 1) return useful[0]
+
+  return Object.freeze({
+    type: 'or',
+    alternatives: useful,
+  })
+}
 
 export const key: (key: string) => Keystroke = (key: string) => Object.freeze({
   type: 'keystroke',
