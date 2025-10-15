@@ -46,27 +46,29 @@ export const partialDeriv: (dfa: Dfa, inputEvent: KeyboardEvent) => Dfa[] = (dfa
   //   - otherwise, collect the Alt and Control modifiers
   //   - if the key and modifiers all match (missing modifiers should be checked to false) we return empty
   //   - otherwise return never
-  switch (dfa.type) {
-    case 'unit':
-    case 'nothing':
-      return []
-    case 'or':
-      return dfa.alternatives.flatMap(r => partialDeriv(r, inputEvent))
-    case 'and': {
-      const leftmost = dfa.sequence[0]
-      const right = dfa.sequence.slice(1)
-      const s1 = partialDeriv(leftmost, inputEvent).map(l => seq(l, ...right))
-      if (acceptsEmpty(leftmost)) {
-        // TODO maybe this would be better expressed as a loop
-        return [...s1, ...partialDeriv(seq(...right), inputEvent)]
-      } else {
-        return s1
+
+  if (inputEvent.repeat) {
+    // this happens before the switch as if we are in the accept state but receive a repeat event we don't want to do anything
+    return [dfa]
+  } else {
+    switch (dfa.type) {
+      case 'unit':
+      case 'nothing':
+        return []
+      case 'or':
+        return dfa.alternatives.flatMap(r => partialDeriv(r, inputEvent))
+      case 'and': {
+        const leftmost = dfa.sequence[0]
+        const right = dfa.sequence.slice(1)
+        const s1 = partialDeriv(leftmost, inputEvent).map(l => seq(l, ...right))
+        if (acceptsEmpty(leftmost)) {
+          // TODO maybe this would be better expressed as a loop
+          return [...s1, ...partialDeriv(seq(...right), inputEvent)]
+        } else {
+          return s1
+        }
       }
-    }
-    case 'keystroke': {
-      if (inputEvent.repeat) {
-        return [dfa]
-      } else {
+      case 'keystroke': {
         const wasCtrl = inputEvent.ctrlKey
         const wasAlt = inputEvent.altKey
         const needCtrl = dfa.modifiers.Control ?? false
