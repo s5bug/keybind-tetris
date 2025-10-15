@@ -11,7 +11,21 @@ if (import.meta.env.DEV) {
   await initDevtools({ app })
 }
 
-await app.init({ resizeTo: window })
+await app.init({
+  resizeTo: window,
+  layout: {
+    layout: {
+      autoUpdate: true,
+      enableDebug: undefined!,
+      debugModificationCount: undefined!,
+      throttle: undefined!,
+    },
+  },
+})
+
+if (import.meta.env.DEV) {
+  await app.renderer.layout.enableDebug(true)
+}
 
 document.body.appendChild(app.canvas)
 
@@ -21,14 +35,21 @@ app.stage.layout = {
   justifyContent: 'center',
   alignItems: 'center',
 }
+app.renderer.on('resize', (width, height) => {
+  app.stage.layout = {
+    width, height, justifyContent: 'center', alignItems: 'center',
+  }
+})
 
 // TODO refactor this into a screen system
 const mainMenuContainer = new Container({
   isRenderGroup: true,
   layout: {
-    width: '100%',
-    height: '100%',
-    gap: 4,
+    // TODO adjust this based on screen aspect ratio
+    width: '80%',
+    height: '80%',
+    flexDirection: 'column',
+    gap: 32,
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignContent: 'center',

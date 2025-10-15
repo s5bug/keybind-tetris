@@ -1,5 +1,4 @@
 import * as z from 'zod'
-import { HashSet } from '@rimbu/hashed'
 
 interface IDfa {
   type: string
@@ -40,8 +39,8 @@ export const acceptsEmpty: (dfa: Dfa) => boolean = (dfa) => {
   }
 }
 
-export const partialDeriv: (dfa: Dfa, inputEvent: KeyboardEvent, accum?: HashSet.Builder<Dfa>) => HashSet.Builder<Dfa> = (dfa, inputEvent, accum) => {
-  accum ??= HashSet.builder<Dfa>()
+// we return an array here rather than some sort of set because we want to always show the first applicable alternative
+export const partialDeriv: (dfa: Dfa, inputEvent: KeyboardEvent) => Dfa[] = (dfa, inputEvent) => {
   // - for keystroke, we check the inputEvent
   //   - if it's `repeat` we discard and do nothing (return dfa)
   //   - otherwise, collect the Alt and Control modifiers
@@ -50,42 +49,33 @@ export const partialDeriv: (dfa: Dfa, inputEvent: KeyboardEvent, accum?: HashSet
   switch (dfa.type) {
     case 'unit':
     case 'nothing':
-      break
+      return []
     case 'or':
-      dfa.alternatives.forEach(r => partialDeriv(r, inputEvent, accum))
-      break
+      return dfa.alternatives.flatMap(r => partialDeriv(r, inputEvent))
     case 'and': {
       const leftmost = dfa.sequence[0]
       const right = dfa.sequence.slice(1)
-      const subAccum = HashSet.builder<Dfa>()
-      partialDeriv(leftmost, inputEvent, subAccum)
-      subAccum.forEach((s) => {
-        accum.add(seq(s, ...right))
-      })
+      const s1 = partialDeriv(leftmost, inputEvent).map(l => seq(l, ...right))
       if (acceptsEmpty(leftmost)) {
         // TODO maybe this would be better expressed as a loop
-        partialDeriv(seq(...right), inputEvent, accum)
+        return [...s1, ...partialDeriv(seq(...right), inputEvent)]
+      } else {
+        return s1
       }
-      break
     }
     case 'keystroke': {
       if (inputEvent.repeat) {
-        accum.add(dfa)
-        break
+        return [dfa]
       } else {
         const wasCtrl = inputEvent.ctrlKey
         const wasAlt = inputEvent.altKey
         const needCtrl = dfa.modifiers.Control ?? false
         const needAlt = dfa.modifiers.Alt ?? false
-        if (wasCtrl !== needCtrl || wasAlt !== needAlt) break
-        else if (dfa.key === inputEvent.key) {
-          accum.add(unit)
-          break
-        }
+        if (wasCtrl !== needCtrl || wasAlt !== needAlt || dfa.key !== inputEvent.key) return []
+        else return [unit]
       }
     }
   }
-  return accum
 }
 
 export interface Zfa<T> {
